@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Course List</h1>
+    <div name="list" id="list"></div>
+    <script>
+        function Course(c){
+            const e = document.createElement("div");
+            e.innerHTML = `<button>${c.courseName}</button>`;
+            e.dataset.id = c.id;
+            e.addEventListener("click", e=>{
+                // alert(e.target.parentElement.dataset.id);
+                localStorage.selectedCourseId = e.target.parentElement.dataset.id;
+                window.location.href = "edit.html";
+            });
+            return e;
+        }
+
+        function renderCourseList(courses) {
+            courses.forEach(c => list.appendChild(Course(c)));
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const response = await fetch("http://127.0.0.1:8081/api/courses/");
+            const courses = await response.json();
+            renderCourseList(courses);
+        });
+    </script>
+</body>
+
+</html>
