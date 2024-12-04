@@ -1,12 +1,85 @@
 <body>
     <h1>Edit Course</h1>
     <div id="item">?</div>
+    <footer>
+        <button id="edt">EDIT</button>
+        <button id="del">DELETE...</button>
+    </footer>
     <script>
-        document.addEventListener("DOMContentLoaded", async ()=>{
+
+        del.addEventListener("click", () => location = "del.html");
+
+        edt.addEventListener("click", () => {
+            let inputDate = new Date(course.startDate);
+            if (course.startDate.length != 10) {
+                inputDate = new Date(course.startDate + " 2024");
+            };
+
+            const year = inputDate.getFullYear();
+            const month = (inputDate.getMonth() + 1).toString().padStart(2, "0");
+            const day = inputDate.getDate().toString().padStart(2, "0");
+            const formattedDate = `${year}-${month}-${day}`;
+            item.innerHTML = `
+                    <label>Course Id:<br> <input value="${course.id}" id="courseId"><br></label>
+                    <label>Course Name:<br> <input value="${course.courseName}" id="courseName"></label><br>
+                    <label>Course Department:<br> <input value="${course.dept}" id="courseDept"></label><br>
+                    <label>Course Number:<br> <input type ="number" value="${course.courseNum}" id="courseNum"></label><br>
+                    <label>Course Instructor:<br> <input value="${course.instructor}" id="instructor"></label><br>
+                    <label>Course Start Date:<br> <input type="date" value="${formattedDate}" id="startDate"></label><br>
+                    <label>Course Number of Days:<br> <input value="${course.numDays}" id="numDays"></label><br>
+                    <button onclick="save()">SAVE</button>
+                    `;
+        });
+
+        async function save() {
+            const bodyData = {
+                // "courseId": courseId.value,
+                "courseName": courseName.value,
+                "dept": courseDept.value,
+                "courseNum": courseNum.value,
+                "instructor": instructor.value,
+                "startDate": startDate.value,
+                "numDays": numDays.value
+            };
+            if (courseId.value) {
+                //Regular save PUT UPDATE
+                const req = await fetch("http://127.0.0.1:8081/api/courses/" + courseId.value, {
+                    method: "PUT",
+                    body: JSON.stringify(bodyData),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                });
+            } else {
+                //New save POST CREATE
+                const req = await fetch("http://127.0.0.1:8081/api/courses/", {
+                    method: "POST",
+                    body: JSON.stringify(bodyData),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                });
+                const data = await req.json();
+                // courseId.value = data.id;  
+            }
+            window.location = "index.html";
+        }
+        
+        document.addEventListener("DOMContentLoaded", async () => {
             const id = localStorage.selectedCourseId;
             const response = await fetch("http://localhost:8081/api/courses/" + id);
             const c = await response.json();
-            item.innerHTML = `COURSE NAME: ${c.courseName}`;
+            window.course = c;
+            const summary = `
+                <h1>${c.courseName}</h1>
+                <h2>${c.instructor}</h2>
+                <h3>${c.startDate}</h3>
+                <div>ID:   ${c.id}</div>
+                <div>DEPT: ${c.dept}</div>
+                <div>DAYS: ${c.numDays}</div>
+            `;
+            item.innerHTML = summary;
+            localStorage.summary = summary;
         });
 
     </script>

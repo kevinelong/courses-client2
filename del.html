@@ -1,0 +1,24 @@
+<body>
+    <h1>Delete</h1>
+    <h2>Are you sure you want to delete this item?</h2>
+    <div id="item">?</div>
+    <footer>
+        <button id="yesDel">YES</button>
+        <button id="noDel">NO</button>
+    </footer>
+    <script>
+        async function del() {
+            const r = await fetch("http://localhost:8081/api/courses/" + localStorage.selectedCourseId, {
+                method: "DELETE",
+                headers: { "Content-type": "application/json; charset=UTF-8" }
+            });
+            location = "index.html"
+        };
+
+        item.innerHTML = localStorage.summary;
+        
+        yesDel.addEventListener("click", del);
+        noDel.addEventListener("click", () => location = "edit.html");
+
+    </script>
+</body>
